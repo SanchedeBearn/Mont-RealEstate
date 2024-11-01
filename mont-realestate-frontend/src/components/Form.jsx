@@ -1,37 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
+import './Form.css';
 
-const Form = () => {
-    const [location, setLocation] = useState("");
-    const [propertyType, setPropertyType] = useState("");
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Estimation demandée pour :", location, propertyType);
-    };
-
+const Form = ({ onSubmit, onReset }) => {
     return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                Localisation :
-                <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                />
-            </label>
-            <label>
-                Type de bien :
-                <select
-                    value={propertyType}
-                    onChange={(e) => setPropertyType(e.target.value)}
-                >
-                    <option value="apartment">Appartement</option>
-                    <option value="house">Maison</option>
-                    <option value="studio">Studio</option>
-                </select>
-            </label>
-            <button type="submit">Estimer le bien</button>
-        </form>
+        <div className="form">
+            <h2 className="form__title">Estimer votre bien</h2>
+            <form onSubmit={onSubmit} className="form__content">
+                <label>Adresse :
+                    <input type="text" name="address" required />
+                </label>
+                <label>Ville :
+                    <input type="text" name="city" required />
+                </label>
+                <label>Code postal :
+                    <input type="text" name="postalCode" required />
+                </label>
+                <label>Nombre de salles de bain :
+                    <input type="number" name="bathrooms" required />
+                </label>
+                <label>Nombre de chambres :
+                    <input type="number" name="bedrooms" required />
+                </label>
+                <label>Surface du bien (en pi²) :
+                    <input type="number" name="surface" required />
+                </label>
+                <div className="form__buttons">
+                    <button type="submit">Soumettre les informations</button>
+                    <button type="reset" onClick={onReset}>Reset</button>
+                </div>
+            </form>
+        </div>
     );
 };
 
