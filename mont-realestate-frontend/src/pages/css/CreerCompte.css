@@ -1,22 +1,29 @@
-.form {
-    max-width: 100%;
-    margin: 2rem auto;
+.creer-compte {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 87.5vh;
+}
+
+.creer-compte__form {
+    max-width: 90%;
+    width: 100%;
     text-align: center;
 }
 
-.form__title {
+.creer-compte__title {
     font-size: 1.4rem;
     display: inline-block;
     padding: 1rem 4rem;
-    background-image: url('../img/border-title.png');
+    background-image: url('src/img/border-title.png');
     background-size: 140% 180%;
     background-repeat: no-repeat;
     background-position: center;
     background-origin: content-box;
-    margin: 0 auto 3rem auto;
+    margin: 0 auto 1.75rem auto;
 }
 
-.form__content {
+.creer-compte__content {
     max-width: 60vw;
     display: flex;
     flex-direction: column;
@@ -24,8 +31,8 @@
     background-color: #D9D9D9;
     border-radius: 5px;
     padding: 2rem;
-    border-radius: 5px;
     margin: 0 auto;
+    text-align: left;
 }
 
 label {
@@ -36,22 +43,30 @@ label {
     font-weight: 500;
 }
 
-input[type="text"],
-input[type="number"] {
+input {
     flex: 1;
     padding: 0.5rem;
-    border: 1px solid #ccc;
     border-radius: 4px;
     max-width: 40vw;
+    color: black;
 }
 
-.form__buttons {
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"] {
+    background-color: white;
+    border: none;
+}
+
+.creer-compte__buttons {
     display: flex;
     justify-content: space-between;
     margin-top: 2rem;
+    gap: 1rem;
 }
 
-button {
+.creer-compte__button {
     padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 4px;
@@ -59,15 +74,6 @@ button {
     font-size: 1rem;
 }
 
-button[type="submit"]:hover {
+.creer-compte__button[type="submit"]:hover {
     background-color: #00aa00;
-}
-
-button[type="reset"]:hover {
-    background-color: #aa0000;
-}
-
-.prediction {
-    margin-top: 3rem; /* Ajoutez une marge supérieure pour espacer la div prediction du formulaire */
-    padding: 2rem;
 }

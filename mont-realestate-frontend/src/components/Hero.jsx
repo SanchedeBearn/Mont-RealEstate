@@ -1,5 +1,6 @@
 import React from 'react';
-import './Hero.css';
+import { Link } from 'react-router-dom';
+import './css/Hero.css';
 
 const Hero = () => {
     return (
@@ -11,7 +12,7 @@ const Hero = () => {
                 <div className="hero__content">
                     <h2>Bienvenue sur Mont-RealEstate !</h2>
                     <p>Estimez facilement la valeur de votre bien immobilier à Montréal grâce à notre technologie IA</p>
-                    <button className="hero__button">Obtenez une estimation gratuite</button>
+                    <Link to="/prediction" className="button">Obtenez une estimation gratuite</Link>
                 </div>
             </div>
         </section>

@@ -1,0 +1,50 @@
+.about {
+    max-width: 80vw;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: Arial, sans-serif;
+    text-align: justify;
+}
+
+.about h1 {
+    font-size: 2.5rem;
+    color: #3199CB;
+    text-align: center;
+    margin: 0 0 2rem 0;
+}
+
+.about__intro,
+.about__features,
+.about__info {
+    margin-bottom: 2rem;
+}
+
+.about__features h2,
+.about__info h2,
+.about__account h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.about__features ul,
+.about__info ul,
+.about__account ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    color: #555;
+}
+
+.about__features ul li,
+.about__info ul li,
+.about__account ul li {
+    margin-bottom: 0.5rem;
+}
+
+.about p, .about li {
+    line-height: 1.6;
+}
+
+.about strong {
+    color: #3199CB;
+}

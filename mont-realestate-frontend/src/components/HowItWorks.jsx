@@ -1,11 +1,38 @@
-import React from 'react';
-import './HowItWorks.css';
+import React, { useEffect, useRef } from 'react';
+import './css/HowItWorks.css';
 
 const HowItWorks = () => {
+    const titleRef = useRef(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                } else {
+                    entry.target.classList.remove('animate');
+                }
+            },
+            {
+                threshold: 0.1, // Ajustez ce seuil selon vos besoins
+            }
+        );
+
+        if (titleRef.current) {
+            observer.observe(titleRef.current);
+        }
+
+        return () => {
+            if (titleRef.current) {
+                observer.unobserve(titleRef.current);
+            }
+        };
+    }, []);
+
     return (
         <section className="how-it-works">
             <div className="how-it-works__title">
-                <h2>Comment ça marche ?</h2>
+                <h2 ref={titleRef}>Comment ça marche ?</h2>
             </div>
             <div className="how-it-works__steps">
                 <div className="how-it-works__step">
