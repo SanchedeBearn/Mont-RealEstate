@@ -3,3 +3,12 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+api_index:
+    path: /api
+    controller: App\Controller\ApiController::index
+    methods: GET
+
+api_user:
+    resource: '../src/Controller/UserController.php'
+    type: annotation
