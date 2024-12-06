@@ -1,45 +1,62 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Utilisation d'Axios pour les requêtes
+import { AuthContext } from '../contexts/AuthContext';
 import './css/Connexion.css';
 
+//TODO : PROBLEME COOKIE QUI NE RESTE PAS APRES RECHARGEMENT
 const Connexion = () => {
+    const { setIsAuthenticated } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [serverError, setServerError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const titleRef = useRef(null);
 
     const handleLogin = async (event) => {
         event.preventDefault();
-        setServerError(''); // Réinitialiser les erreurs
-        setLoading(true); // Activer l'état de chargement
+        setServerError('');
+        setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8000/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
+            // Requête de connexion
+            const loginResponse = await axios.post(
+                'http://localhost:8000/api/login',
+                { email, password },
+                { withCredentials: true } // Envoie des cookies
+            );
 
-            const data = await response.json();
+            console.log(loginResponse);
 
-            if (response.ok) {
-                localStorage.setItem('token', data.token); // Stocker le token JWT
-                navigate('/'); // Retour à la page d'accueil
-            } else {
-                setServerError(data.message || 'Erreur lors de la connexion.');
+            if (loginResponse.status === 200) {
+                // Requête pour récupérer les informations utilisateur
+                const userResponse = await axios.get('http://localhost:8000/api/me', {
+                    withCredentials: true, // Inclure les cookies
+                });
+
+                if (userResponse.status === 200) {
+                    setIsAuthenticated(true);
+                    navigate('/'); // Redirection après connexion
+                } else {
+                    throw new Error('Erreur lors de la récupération des informations utilisateur.');
+                }
             }
         } catch (error) {
             console.error('Erreur:', error);
-            setServerError('Impossible de se connecter. Veuillez réessayer.');
+            const errorMessage =
+                error.response?.data?.message || 'Impossible de se connecter. Veuillez réessayer.';
+            setServerError(errorMessage);
         } finally {
-            setLoading(false); // Désactiver l'état de chargement
+            setLoading(false);
         }
     };
 
     return (
         <div className="connexion__form">
-            <h2 className="connexion__title">Connexion</h2>
+            <h2 className="connexion__title" ref={titleRef}>
+                Connexion
+            </h2>
             {serverError && <p className="error-message">{serverError}</p>}
             <form onSubmit={handleLogin} className="connexion__content">
                 <div className="connexion__group">
@@ -61,19 +78,8 @@ const Connexion = () => {
                     />
                 </div>
                 <div className="connexion__buttons">
-                    <button
-                        type="submit"
-                        className="connexion__button button"
-                        disabled={loading}
-                    >
+                    <button type="submit" className="connexion__button button" disabled={loading}>
                         {loading ? 'Chargement...' : 'Se connecter'}
-                    </button>
-                    <button
-                        type="button"
-                        className="connexion__button button"
-                        onClick={() => navigate('/creer_compte')}
-                    >
-                        Créer un compte
                     </button>
                 </div>
             </form>

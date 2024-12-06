@@ -17,11 +17,24 @@
     font-size: 1.5rem;
     padding: 1rem 4rem;
     background-image: url('src/img/border-title.png');
-    background-size: 190% 180%;
+    background-size: 210% 180%;
     background-repeat: no-repeat;
     background-position: center;
     background-origin: content-box;
     margin-bottom: 1.5rem;
+}
+
+.connexion__title.animate {
+    animation: zoomInBackgroundConnexion 0.5s ease-in;
+}
+
+@keyframes zoomInBackgroundConnexion {
+    0% {
+        background-size: 157.5% 135%;
+    }
+    100% {
+        background-size: 210% 180%;
+    }
 }
 
 /* Formulaire */
@@ -29,7 +42,8 @@
     background-color: #D9D9D9;
     padding: 2rem;
     border-radius: 8px;
-    min-width: 80%;
+    width: 100%;
+    max-width: 80vw;
     margin: auto;
     text-align: left;
     display: flex;

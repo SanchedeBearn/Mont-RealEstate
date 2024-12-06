@@ -1,32 +1,34 @@
 import React, { useState } from 'react';
 import Form from '../components/Form';
-import PredictionPopup from '../components/PredictionPopup';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Prediction = () => {
+    const navigate = useNavigate();
     const [estimation, setEstimation] = useState(null);
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-    const handleFormSubmit = (event) => {
+    const handleFormSubmit = async (event, formData) => {
         event.preventDefault();
-        // Simulation d'estimation
-        setEstimation(500000);
-        setIsPopupOpen(true);
+
+        try {
+            const response = await axios.post('http://localhost:5000/predict', formData);
+            const simulatedEstimation = response.data.predicted_price;
+
+            setEstimation(simulatedEstimation);
+
+            localStorage.setItem('estimation', JSON.stringify(simulatedEstimation));
+            navigate('/resultat');
+        } catch (error) {
+            console.error('Erreur lors de la prédiction :', error);
+        }
     };
 
     const handleFormReset = () => {
         setEstimation(null);
+        localStorage.removeItem('estimation');
     };
 
-    const handleClosePopup = () => {
-        setIsPopupOpen(false);
-    };
-
-    return (
-        <div className="prediction">
-            <Form onSubmit={handleFormSubmit} onReset={handleFormReset} />
-            {isPopupOpen && <PredictionPopup estimation={estimation} onClose={handleClosePopup} />}
-        </div>
-    );
+    return <Form onSubmit={handleFormSubmit} onReset={handleFormReset} />;
 };
 
 export default Prediction;

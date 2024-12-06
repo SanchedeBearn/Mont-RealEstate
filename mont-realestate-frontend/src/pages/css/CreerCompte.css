@@ -24,12 +24,26 @@
     margin-bottom: 1.5rem;
 }
 
+.creer-compte__title.animate {
+    animation: zoomInBackgroundCreer 0.5s ease-in;
+}
+
+@keyframes zoomInBackgroundCreer {
+    0% {
+        background-size: 105% 135%;
+    }
+    100% {
+        background-size: 140% 180%;
+    }
+}
+
 /* Formulaire */
 .creer-compte__content {
     background-color: #D9D9D9;
     padding: 2rem;
     border-radius: 8px;
-    min-width: 80%;
+    width: 100%;
+    max-width: 80vw;
     margin: auto;
     text-align: left;
     display: flex;

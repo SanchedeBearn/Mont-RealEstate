@@ -7,8 +7,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -21,8 +24,11 @@ class UserController extends AbstractController
     private UserPasswordHasherInterface $passwordHasher;
     private LoggerInterface $logger;
 
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, LoggerInterface $logger)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher,
+        LoggerInterface $logger
+    ) {
         $this->entityManager = $entityManager;
         $this->passwordHasher = $passwordHasher;
         $this->logger = $logger;
@@ -33,11 +39,13 @@ class UserController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        $this->logger->info('Register endpoint accessed.', ['data' => $data]);
-
         if (!isset($data['email'], $data['password'])) {
-            $this->logger->error('Invalid data provided for registration.', ['data' => $data]);
             return new JsonResponse(['message' => 'Invalid data'], 400);
+        }
+
+        $existingUser = $this->entityManager->getRepository(Utilisateur::class)->findOneBy(['email' => $data['email']]);
+        if ($existingUser) {
+            return new JsonResponse(['message' => 'Email already exists'], 400);
         }
 
         try {
@@ -48,57 +56,74 @@ class UserController extends AbstractController
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
-            $this->logger->info('User successfully created.', ['email' => $data['email']]);
             return new JsonResponse(['message' => 'User created'], 201);
         } catch (\Exception $e) {
-            $this->logger->error('Error during user registration.', [
-                'error' => $e->getMessage(),
-                'data' => $data,
-            ]);
             return new JsonResponse(['message' => 'An error occurred while creating the user.'], 500);
         }
     }
 
-
-    #[Route('/users', name: 'list_users', methods: ['GET'])]
-    public function listUsers(): JsonResponse
-    {
-        $users = $this->entityManager->getRepository(Utilisateur::class)->findAll();
-        $usersData = array_map(fn(Utilisateur $user) => ['email' => $user->getEmail()], $users);
-
-        $this->logger->info('Users listed.', ['count' => count($usersData)]);
-
-        return new JsonResponse($usersData);
-    }
-
     #[Route('/login', name: 'login', methods: ['POST'])]
-    public function login(Request $request): JsonResponse
-    {
+    public function login(
+        Request $request,
+        JWTTokenManagerInterface $JWTManager
+    ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
-        $this->logger->info('Login endpoint accessed.', ['data' => $data]);
-
         if (!isset($data['email'], $data['password'])) {
-            return new JsonResponse(['message' => 'Invalid data'], 400);
+            return new JsonResponse(['message' => 'Invalid credentials'], 400);
         }
 
         $user = $this->entityManager->getRepository(Utilisateur::class)->findOneBy(['email' => $data['email']]);
 
-        if (!$user) {
-            $this->logger->warning('Login failed: User not found.', ['email' => $data['email']]);
-            return new JsonResponse(['message' => 'Utilisateur introuvable.'], 404);
+        if (!$user || !$this->passwordHasher->isPasswordValid($user, $data['password'])) {
+            return new JsonResponse(['message' => 'Invalid email or password'], 401);
         }
 
-        if (!$this->passwordHasher->isPasswordValid($user, $data['password'])) {
-            $this->logger->warning('Login failed: Incorrect password.', ['email' => $data['email']]);
-            return new JsonResponse(['message' => 'Mot de passe incorrect.'], 401);
-        }
+        // Générer le JWT
+        $token = $JWTManager->create($user);
 
-        // Simuler un token JWT pour cet exemple
-        $token = base64_encode(json_encode(['email' => $user->getEmail(), 'exp' => time() + 3600]));
-
-        $this->logger->info('Login successful.', ['email' => $data['email']]);
-        return new JsonResponse(['token' => $token], 200);
+        // Envoyer le token dans un cookie sécurisé
+        $response = new JsonResponse(['message' => 'Login successful']);
+        $response->headers->setCookie(
+            new Cookie(
+                'auth_token',
+                $token,
+                time() + (14 * 24 * 60 * 60),
+                '/',
+                null,
+                false,  // HTTPS uniquement (mettre false en local)
+                true,   // HTTPOnly
+                false,
+                Cookie::SAMESITE_STRICT
+            )
+        );
+        error_log('Cookie auth_token set: ' . $token);
+        return $response;
     }
 
+    #[Route('/logout', name: 'logout', methods: ['POST'])]
+    public function logout(): JsonResponse
+    {
+        $response = new JsonResponse(['message' => 'Logout successful']);
+        $response->headers->clearCookie('auth_token', '/', null, true, true, 'Strict');
+        return $response;
+    }
+
+    #[Route('/me', name: 'me', methods: ['GET'])]
+    public function me(Request $request): JsonResponse
+    {
+        $cookies = $request->cookies->all();
+        // Log les cookies pour vérifier s'ils sont bien reçus
+        $this->logger->info('Cookies reçus : ', $cookies);
+
+        $user = $this->getUser();
+        if (!$user) {
+            return new JsonResponse(['message' => 'Unauthorized'], 401);
+        }
+
+        return new JsonResponse([
+            'email' => $user->getUserIdentifier(),
+            'roles' => $user->getRoles(),
+        ]);
+    }
 }

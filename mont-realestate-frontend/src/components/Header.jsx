@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext';
+import Cookies from 'js-cookie';
 import './css/Header.css';
 
 const Header = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = Cookies.get('auth_token');
+    
         if (token) {
             fetch('/api/getEmail', {
                 method: 'GET',
+                credentials: 'include',
                 headers: { Authorization: `Bearer ${token}` },
             })
                 .then((response) => response.json())
@@ -24,13 +28,13 @@ const Header = () => {
                 })
                 .catch(() => setIsAuthenticated(false));
         }
-    }, []);
+    }, [setIsAuthenticated]);
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        Cookies.remove('auth_token');
         setIsAuthenticated(false);
         navigate('/');
-    };
+    };    
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -84,10 +88,25 @@ const Header = () => {
                                     src="src/img/noprofil.jpeg"
                                     alt="Profil"
                                     className="dropdown-button"
+                                    onClick={() => setIsMenuOpen(!isMenuOpen)} // Toggle le menu dropdown
                                 />
+                                {isMenuOpen && (
+                                    <div className="dropdown-menu">
+                                        <h1 className="dropdown-title">Profil</h1>
+                                        <p className="dropdown-email">{email || "Utilisateur"}</p>
+                                        <Link className="dropdown-item" to="/profil" onClick={toggleMenu}>
+                                            Profil
+                                        </Link>
+                                        <Link className="dropdown-item" to="/historique" onClick={toggleMenu}>
+                                            Historique
+                                        </Link>
+                                        <Link className="dropdown-item" to="/" onClick={handleLogout}>Se déconnecter</Link>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
+
 
                     <button className="burger" onClick={toggleMenu}>
                         <span className="burger__line"></span>
@@ -109,7 +128,7 @@ const Header = () => {
                                 <li><Link to="/profil" onClick={toggleMenu}>Profil</Link></li>
                                 <li><Link to="/historique" onClick={toggleMenu}>Historique</Link></li>
                                 <li>
-                                    <button onClick={handleLogout}>Se déconnecter</button>
+                                    <Link to="/" onClick={handleLogout}>Se déconnecter</Link>
                                 </li>
                             </>
                         ) : (

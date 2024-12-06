@@ -5,9 +5,22 @@
     justify-content: flex-start;
     max-width: 80vw;
     width: 100%;
-    padding: 2rem;
+    padding: 2rem 0;
     margin: 0 auto;
     text-align: center;
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+.error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
 }
 
 .form__title {
@@ -18,20 +31,34 @@
     background-repeat: no-repeat;
     background-position: center;
     background-origin: content-box;
-    margin-bottom: 2rem;
-    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.form__title.animate {
+    animation: zoomInBackgroundEstim 0.5s ease-in;
+}
+
+@keyframes zoomInBackgroundEstim {
+    0% {
+        background-size: 105% 135%;
+    }
+    100% {
+        background-size: 140% 180%;
+    }
 }
 
 .form__content {
     background-color: #D9D9D9;
     padding: 2rem;
     border-radius: 8px;
-    min-width: 80%;
+    width: 100%;
+    max-width: 80vw;
     margin: auto;
     text-align: left;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    box-sizing: border-box;
 }
 
 .form__group {
@@ -43,6 +70,7 @@
 label {
     font-size: 1.1rem;
     font-weight: 500;
+    text-align: left;
 }
 
 input {
@@ -105,9 +133,10 @@ button[type="reset"]:hover {
 }
 
 @media (max-width: 400px) {
-    .form{
-        padding-left: 1.9rem;
+    .form__content {
+        padding: 1rem;
     }
+
     .form__title {
         font-size: 1rem;
     }

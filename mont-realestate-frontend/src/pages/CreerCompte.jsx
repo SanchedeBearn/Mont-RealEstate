@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './css/CreerCompte.css';
 
@@ -8,6 +8,32 @@ const CreerCompte = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const titleRef = useRef(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                } else {
+                    entry.target.classList.remove('animate');
+                }
+            },
+            {
+                threshold: 0.1, // Ajustez ce seuil selon vos besoins
+            }
+        );
+
+        if (titleRef.current) {
+            observer.observe(titleRef.current);
+        }
+
+        return () => {
+            if (titleRef.current) {
+                observer.unobserve(titleRef.current);
+            }
+        };
+    }, []);
 
     const handleSignup = async (event) => {
         event.preventDefault();
@@ -47,7 +73,7 @@ const CreerCompte = () => {
 
     return (
         <div className="creer-compte__form">
-            <h2 className="creer-compte__title">Créer un compte</h2>
+            <h2 className="creer-compte__title" ref={titleRef}>Créer un compte</h2>
             {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSignup} className="creer-compte__content">
                 <div className="creer-compte__group">

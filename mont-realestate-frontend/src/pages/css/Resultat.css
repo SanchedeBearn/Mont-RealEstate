@@ -1,0 +1,135 @@
+/* Structure principale */
+.resultat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    max-width: 80vw;
+    width: 100%;
+    padding: 2rem 0;
+    margin: 0 auto;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* Titre */
+.resultat__title {
+    font-size: 1.5rem;
+    padding: 1rem 4rem;
+    background-image: url('src/img/border-title.png');
+    background-size: 120% 180%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-origin: content-box;
+    margin-bottom: 1.5rem;
+}
+
+.resultat__title.animate {
+    animation: zoomInBackgroundResult 0.5s ease-in;
+}
+
+@keyframes zoomInBackgroundResult {
+    0% {
+        background-size: 90% 135%;
+    }
+    100% {
+        background-size: 120% 180%;
+    }
+}
+
+/* Contenu */
+.resultat__content {
+    background-color: #D9D9D9;
+    padding: 2rem;
+    border-radius: 8px;
+    min-width: 80%;
+    margin: auto;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-sizing: border-box;
+}
+
+.resultat__estimation {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.resultat__estimation h3 {
+    margin-bottom: 0.5rem;
+}
+
+.resultat__button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    background-color: #3199CB;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.resultat__button:hover {
+    background-color: #0c55af;
+}
+
+/* Responsivité */
+@media (max-width: 768px) {
+    .resultat__content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    .resultat__title {
+        font-size: 1.25rem;
+    }
+
+    .resultat__estimation p {
+        font-size: 1.15rem;
+    }
+}
+
+@media (max-width: 530px) {
+    .resultat__title {
+        font-size: 1rem;
+    }
+
+    .resultat__form {
+        padding: 1rem;
+    }
+
+    .resultat__content {
+        padding: 1.5rem;
+    }
+
+    .resultat__button {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .resultat__estimation {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 530px){
+    .resultat__title {
+        background-size: 150% 110%;
+    }
+
+    @keyframes zoomInBackgroundResult {
+        0% {
+            background-size: 90% 135%;
+        }
+        100% {
+            background-size: 120% 180%;
+        }
+    }
+}
